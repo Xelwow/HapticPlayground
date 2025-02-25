@@ -7,8 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		229DC3F82D6E6942009144AD /* AutoResizingSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 229DC3F72D6E6942009144AD /* AutoResizingSheet.swift */; };
+		229DC3FC2D6E6973009144AD /* HapticCurve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 229DC3F92D6E6973009144AD /* HapticCurve.swift */; };
+		229DC3FD2D6E6973009144AD /* CurveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 229DC3FA2D6E6973009144AD /* CurveView.swift */; };
 		7C72CEF32D6CFDF900DBEECD /* HapticEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C72CEF22D6CFDF500DBEECD /* HapticEvent.swift */; };
-		7C72CEF52D6D0EFA00DBEECD /* Haptic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C72CEF42D6D0EF800DBEECD /* Haptic.swift */; };
+		7C72CEF52D6D0EFA00DBEECD /* HapticPattern.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C72CEF42D6D0EF800DBEECD /* HapticPattern.swift */; };
 		7CB4A7DA2C765E8B00ABB2B1 /* HapticPlaygroundApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CB4A7D92C765E8B00ABB2B1 /* HapticPlaygroundApp.swift */; };
 		7CB4A7DE2C765E8E00ABB2B1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7CB4A7DD2C765E8E00ABB2B1 /* Assets.xcassets */; };
 		7CB4A7E12C765E8E00ABB2B1 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7CB4A7E02C765E8E00ABB2B1 /* Preview Assets.xcassets */; };
@@ -31,8 +34,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		229DC3F72D6E6942009144AD /* AutoResizingSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoResizingSheet.swift; sourceTree = "<group>"; };
+		229DC3F92D6E6973009144AD /* HapticCurve.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticCurve.swift; sourceTree = "<group>"; };
+		229DC3FA2D6E6973009144AD /* CurveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurveView.swift; sourceTree = "<group>"; };
 		7C72CEF22D6CFDF500DBEECD /* HapticEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticEvent.swift; sourceTree = "<group>"; };
-		7C72CEF42D6D0EF800DBEECD /* Haptic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptic.swift; sourceTree = "<group>"; };
+		7C72CEF42D6D0EF800DBEECD /* HapticPattern.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticPattern.swift; sourceTree = "<group>"; };
 		7CB4A7D62C765E8B00ABB2B1 /* HapticPlayground.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HapticPlayground.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7CB4A7D92C765E8B00ABB2B1 /* HapticPlaygroundApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticPlaygroundApp.swift; sourceTree = "<group>"; };
 		7CB4A7DD2C765E8E00ABB2B1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -53,6 +59,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		229DC3FB2D6E6973009144AD /* Curve */ = {
+			isa = PBXGroup;
+			children = (
+				229DC3F92D6E6973009144AD /* HapticCurve.swift */,
+				229DC3FA2D6E6973009144AD /* CurveView.swift */,
+			);
+			path = Curve;
+			sourceTree = "<group>";
+		};
 		7C72CEF12D6CFDD300DBEECD /* Event */ = {
 			isa = PBXGroup;
 			children = (
@@ -65,7 +80,7 @@
 		7C72CEF62D6D0F8B00DBEECD /* Haptic */ = {
 			isa = PBXGroup;
 			children = (
-				7C72CEF42D6D0EF800DBEECD /* Haptic.swift */,
+				7C72CEF42D6D0EF800DBEECD /* HapticPattern.swift */,
 				7CC26B972C7B677300B8FC79 /* Haptic+CoreHaptic.swift */,
 				7CC26B952C7B554700B8FC79 /* HapticView.swift */,
 			);
@@ -91,9 +106,11 @@
 		7CB4A7D82C765E8B00ABB2B1 /* HapticPlayground */ = {
 			isa = PBXGroup;
 			children = (
+				229DC3FB2D6E6973009144AD /* Curve */,
 				7C72CEF62D6D0F8B00DBEECD /* Haptic */,
 				7C72CEF12D6CFDD300DBEECD /* Event */,
 				7CB4A7D92C765E8B00ABB2B1 /* HapticPlaygroundApp.swift */,
+				229DC3F72D6E6942009144AD /* AutoResizingSheet.swift */,
 				7CB4A7DD2C765E8E00ABB2B1 /* Assets.xcassets */,
 				7CB4A7DF2C765E8E00ABB2B1 /* Preview Content */,
 			);
@@ -179,9 +196,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7C72CEF52D6D0EFA00DBEECD /* Haptic.swift in Sources */,
+				7C72CEF52D6D0EFA00DBEECD /* HapticPattern.swift in Sources */,
 				7CC26B962C7B554700B8FC79 /* HapticView.swift in Sources */,
+				229DC3F82D6E6942009144AD /* AutoResizingSheet.swift in Sources */,
 				7CC26B982C7B677300B8FC79 /* Haptic+CoreHaptic.swift in Sources */,
+				229DC3FC2D6E6973009144AD /* HapticCurve.swift in Sources */,
+				229DC3FD2D6E6973009144AD /* CurveView.swift in Sources */,
 				7CB4A7DA2C765E8B00ABB2B1 /* HapticPlaygroundApp.swift in Sources */,
 				7CC26B942C7B381000B8FC79 /* EventView.swift in Sources */,
 				7C72CEF32D6CFDF900DBEECD /* HapticEvent.swift in Sources */,

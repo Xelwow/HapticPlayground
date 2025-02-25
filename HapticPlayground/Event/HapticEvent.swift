@@ -11,14 +11,14 @@ struct HapticEvent: Identifiable, Hashable {
   // Conforms Hashable to be represented in a Picker
   enum EventType: Hashable {
     case transient
-    case continuos(duration: TimeInterval)
+    case continuous(duration: TimeInterval)
 
     func hash(into hasher: inout Hasher) {
       switch self {
       case .transient:
         hasher.combine("transient")
-      case .continuos:
-        hasher.combine("continuos")
+      case .continuous:
+        hasher.combine("continuous")
       }
     }
   }
@@ -45,3 +45,15 @@ struct HapticEvent: Identifiable, Hashable {
   }
 }
 
+extension HapticEvent {
+  var exportString: String {
+    """
+    HapticEvent(
+      intensity: \(intensity),
+      sharpness: \(sharpness),
+      relativeTime: \(relativeTime),
+      type: .\(type)
+    )
+    """
+  }
+}

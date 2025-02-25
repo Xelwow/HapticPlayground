@@ -11,80 +11,117 @@ import CoreHaptics
 
 struct HapticView: View {
   @State
-  var haptic: Haptic
+  var haptic: HapticPattern
   @State
   var selectedEvent: Int?
+  @State
+  var selectedCurve: Int?
 
   @State
   var hapticEngine: CHHapticEngine?
-
+  
   var body: some View {
-    ZStack {
+    ZStack(alignment: .bottom) {
       VStack {
         chart
         listOfEvents
-        tryButton
       }
+      HStack {
+        exportButton
+        Spacer()
+        tryButton
+      }.padding(20)
     }.onAppear {
       prepareHaptics()
+    }.autoResizingSheet(item: $selectedEvent) { event in
+      EventView(event: $haptic.events[event], tryHapticAction: {
+        playHaptic(haptic)
+      })
+    }
+    .autoResizingSheet(item: $selectedCurve) { curve in
+      CurveView(curve: $haptic.curves[curve], tryHaptic: {
+        playHaptic(haptic)
+      })
     }
   }
-
+  
   var chart: some View {
     Chart {
       ForEach(haptic.events) { event in
         chartContent(event: event)
       }
+      ForEach(haptic.curves) { curve in
+        chartContent(curve: curve)
+      }
     }
     .frame(height: 200)
     .padding(.horizontal, 30)
   }
-
+  
   var listOfEvents: some View {
     List(selection: $selectedEvent) {
-      ForEach($haptic.events) { event in
-        listRow(event: event.wrappedValue)
-          .background { Color.clear }
-          .onTapGesture {
-            selectedEvent = haptic.events.firstIndex(where: {
-              $0.id == event.id
+      Section("events") {
+        ForEach($haptic.events) { event in
+          listRow(event: event.wrappedValue)
+            .background { Color.clear }
+            .onTapGesture {
+              selectedEvent = haptic.events.firstIndex(where: {
+                $0.id == event.id
+              })
+            }
+        }
+        .onDelete { indexSet in
+          haptic.events.remove(atOffsets: indexSet)
+        }
+        Button {
+          haptic.events.append(.defaultTransient)
+          selectedEvent = haptic.events.count - 1
+        } label: {
+          Text("+ event")
+        }
+      }
+
+      Section("curves") {
+        ForEach($haptic.curves) { curve in
+          Button(curve.parameterID.wrappedValue.description) {
+            selectedCurve = haptic.curves.firstIndex(where: {
+              $0.id == curve.id
             })
-          }
+          }.foregroundStyle(curve.parameterID.wrappedValue.color)
+        }
+        .onDelete { indexSet in
+          haptic.curves.remove(atOffsets: indexSet)
+        }
+        Button("+ curve") {
+          haptic.curves.append(.blank)
+          selectedCurve = haptic.curves.count - 1
+        }
       }
-      .onDelete { indexSet in
-        haptic.events.remove(atOffsets: indexSet)
-      }
-      Button {
-        haptic.events.append(.defaultTransient)
-        selectedEvent = haptic.events.count - 1
-      } label: {
-        Text("Add event")
-      }
-    }.sheet(item: $selectedEvent) { event in
-      EventView(event: $haptic.events[event], tryHapticAction: {
-        playHaptic(haptic)
-      })
+    }
+  }
+
+  var exportButton: some View {
+    Button {
+      UIPasteboard.general.string = haptic.exportString
+      UINotificationFeedbackGenerator().notificationOccurred(.success)
+    } label: {
+      Text("Export")
+        .padding()
+        .background(.primary.opacity(0.1))
+        .background(.regularMaterial)
+        .cornerRadius(15)
     }
   }
 
   var tryButton: some View {
-    VStack(alignment: .trailing) {
-      Spacer()
-      HStack {
-        Spacer()
-        ZStack {
-          RoundedRectangle(cornerRadius: 15.0)
-            .aspectRatio(1.0, contentMode: .fit)
-            .foregroundStyle(Color.gray.opacity(0.3))
-            .frame(width: 60, height: 60)
-          Text("Try")
-            .foregroundStyle(Color.blue)
-        }
-        .onTapGesture {
-          playHaptic(haptic)
-        }
-        .padding(20)
-      }
+    Button {
+      playHaptic(haptic)
+    } label: {
+      Text("Try")
+        .padding()
+        .background(.primary.opacity(0.1))
+        .background(.regularMaterial)
+        .cornerRadius(15)
     }
   }
 
@@ -106,7 +143,7 @@ struct HapticView: View {
         )
         .foregroundStyle(color)
       }
-    case let .continuos(duration):
+    case let .continuous(duration):
       ForEach(sortedLines.indices) { sortedLineIndex in
         let (lineType, lineValue, color) = sortedLines[sortedLineIndex]
         let lineMarks = [
@@ -128,13 +165,31 @@ struct HapticView: View {
     }
   }
 
-  @ViewBuilder
-  func listRow(event: HapticEvent) -> some View {
-    HStack {
-      Text(event.type.string)
+  @ChartContentBuilder
+  func chartContent(curve: HapticCurve) -> some ChartContent {
+    // draw lines between control points starting from relative time
+    let sortedPoints = curve.controlPoints
+      .sorted { $0.relativeTime < $1.relativeTime }
+
+    let points = sortedPoints.map { point in
+      LineMark(
+        x: .value("Time", point.relativeTime + curve.time),
+        y: .value(curve.parameterID.description, point.value),
+        series: .value("Type", curve.parameterID.description)
+      ).lineStyle(.init(lineWidth: 3, dash: [5], dashPhase: 10))
+    }
+
+    ForEach(points.indices) { index in
+      points[index]
+        .foregroundStyle(curve.parameterID.color)
     }
   }
 
+  @ViewBuilder
+  func listRow(event: HapticEvent) -> some View {
+    Text(event.type.string)
+  }
+  
   func prepareHaptics() {
       guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
       guard hapticEngine == nil else { return }
@@ -145,11 +200,11 @@ struct HapticView: View {
       }
   }
 
-  func playHaptic(_ haptic: Haptic) {
+  func playHaptic(_ haptic: HapticPattern) {
     guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
     guard let hapticEngine else { return }
     do {
-      let pattern = try haptic.core()
+      let pattern = try CHHapticPattern(from: haptic)
       let player = try hapticEngine.makePlayer(with: pattern)
       try hapticEngine.start()
       try player.start(atTime: 0)
@@ -162,15 +217,15 @@ struct HapticView: View {
 extension HapticEvent.EventType {
   var string: String {
     switch self {
-    case .continuos:
-      "continuos"
+    case .continuous:
+      "continuous"
     case .transient:
       "transient"
     }
   }
 }
 
-extension Int: Identifiable {
+extension Int: @retroactive Identifiable {
   public var id: Int { self }
 }
 
