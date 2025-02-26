@@ -31,14 +31,16 @@ struct HapticCurve: Identifiable {
 }
 
 extension HapticCurve {
-  static let blank = HapticCurve(
-    parameterID: .intensity,
-    controlPoints: [
-      .init(relativeTime: 0, value: 1),
-      .init(relativeTime: 1, value: 1),
-    ],
-    time: 0
-  )
+  static var blank: HapticCurve {
+    HapticCurve(
+      parameterID: .intensity,
+      controlPoints: [
+        .init(relativeTime: 0, value: 1),
+        .init(relativeTime: 1, value: 1),
+      ],
+      time: 0
+    )
+  }
 
   var exportString: String {
     """
